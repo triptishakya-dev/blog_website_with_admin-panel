@@ -1,8 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import uploadImage from "@/lib/uploadImage";
 import BlogModal from "@/Modals/BlogModal";
-import { NEXT_CACHE_TAG_MAX_LENGTH } from "next/dist/lib/constants";
-import { Trykker } from "next/font/google";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -53,6 +51,7 @@ export async function POST(req) {
     console.log(newBlog);
 
     const savedBlog = await newBlog.save();
+    
 
     return NextResponse.json(
       { message: "Blog added successfully", data: savedBlog },

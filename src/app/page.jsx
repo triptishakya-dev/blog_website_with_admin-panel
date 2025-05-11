@@ -8,10 +8,10 @@ import React from 'react'
 const page = () => {
   return (
     <div className='bg-white'>
-      <Navbar/>
+    
       <NewsLetter/>
       <BlogSection/>
-      <Footer/>
+    
 
       
     </div>

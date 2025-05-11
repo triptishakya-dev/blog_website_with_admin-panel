@@ -53,7 +53,7 @@ import Image from "next/image";
 const BlogCard = ({ title, description, category, image, id }) => {
   return (
     <div className="max-w-sm bg-white border border-black rounded-md shadow-md hover:shadow-[-7px_7px_0px_#000000] transition-all cursor-pointer overflow-hidden">
-      <Link href={`/blogs/${id}`}>
+      <Link href={`/blog/${id}`}>
         <div>
           <Image
             src={image}

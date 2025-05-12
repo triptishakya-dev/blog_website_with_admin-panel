@@ -20,7 +20,7 @@ const BlogSection = () => {
   }, []);
 
   return (
-    <div className="flex w-full h-screen gap-9 py-10 px-10 justify-around ">
+    <div className="flex w-full  gap-9 py-10 px-10 justify-around flex-col md:flex-row ">
       {blog.map((BlogItem, index) => {
         return (
           <div key={index} className="py-10">

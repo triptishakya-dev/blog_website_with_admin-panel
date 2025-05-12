@@ -30,7 +30,7 @@ const NewsLetter = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className="text-3xl sm:text-5xl font-medium text-black">
+        <h1 className="text-5xl sm:text-5xl font-medium text-black ">
           Latest Blog
         </h1>
         <p className="mt-10 max-w-[740px] m-auto text-xs sm:text-base text-black">

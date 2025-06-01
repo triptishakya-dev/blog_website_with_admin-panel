@@ -1,6 +1,8 @@
 "use client";
 import axios from "axios";
 import React, { useState } from "react";
+// Rich text editor using contentEditable
+import { useRef } from "react";
 
 const page = () => {
   const [title, setTitle] = useState("");
@@ -9,6 +11,20 @@ const page = () => {
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
   const [featuredImg, setFeaturedImg] = useState("");
+  const editorRef = useRef(null);
+
+  // Handle rich text formatting
+  const formatText = (command, value = null) => {
+    document.execCommand(command, false, value);
+    editorRef.current.focus();
+  };
+
+  // Handle content change
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setContent(editorRef.current.innerHTML);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +37,7 @@ const page = () => {
     formData.append("featuredImg", featuredImg);
 
     try {
+      console.log("formData")
       const response = await axios.post("/api/addBlog", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -34,6 +51,10 @@ const page = () => {
         setCategory('')
         setAuthor('')
         setFeaturedImg('')
+        // Clear editor content
+        if (editorRef.current) {
+          editorRef.current.innerHTML = '';
+        }
       }
     } catch (error) {
       console.error("Error submitting data to the API:", error);
@@ -169,7 +190,7 @@ const page = () => {
               />
             </div>
 
-            {/* Content */}
+            {/* Content with Custom Rich Text Editor */}
             <div>
               <label
                 htmlFor="content"
@@ -177,14 +198,100 @@ const page = () => {
               >
                 Post Content
               </label>
-              <textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={6}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-black"
+              
+              {/* Toolbar */}
+              <div className="border border-gray-300 rounded-t-lg bg-white p-3 flex flex-wrap gap-2 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => formatText('bold')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-purple-100 hover:border-purple-300 transition-colors font-bold text-gray-700"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  onClick={() => formatText('italic')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-purple-100 hover:border-purple-300 transition-colors italic text-gray-700"
+                >
+                  I
+                </button>
+                <button
+                  type="button"
+                  onClick={() => formatText('underline')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-purple-100 hover:border-purple-300 transition-colors underline text-gray-700"
+                >
+                  U
+                </button>
+                <div className="w-px bg-gray-400 mx-1 self-stretch"></div>
+                <button
+                  type="button"
+                  onClick={() => formatText('formatBlock', 'h1')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-blue-100 hover:border-blue-300 transition-colors text-gray-700 font-semibold"
+                >
+                  H1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => formatText('formatBlock', 'h2')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-blue-100 hover:border-blue-300 transition-colors text-gray-700 font-semibold"
+                >
+                  H2
+                </button>
+                <button
+                  type="button"
+                  onClick={() => formatText('formatBlock', 'h3')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-blue-100 hover:border-blue-300 transition-colors text-gray-700 font-semibold"
+                >
+                  H3
+                </button>
+                <div className="w-px bg-gray-400 mx-1 self-stretch"></div>
+                <button
+                  type="button"
+                  onClick={() => formatText('insertUnorderedList')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-green-100 hover:border-green-300 transition-colors text-gray-700"
+                >
+                  • List
+                </button>
+                <button
+                  type="button"
+                  onClick={() => formatText('insertOrderedList')}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-green-100 hover:border-green-300 transition-colors text-gray-700"
+                >
+                  1. List
+                </button>
+                <div className="w-px bg-gray-400 mx-1 self-stretch"></div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = prompt('Enter link URL:');
+                    if (url) formatText('createLink', url);
+                  }}
+                  className="px-3 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-yellow-100 hover:border-yellow-300 transition-colors text-gray-700"
+                >
+                  🔗 Link
+                </button>
+              </div>
+              
+              {/* Editor */}
+              <div
+                ref={editorRef}
+                contentEditable
+                onInput={handleContentChange}
+                className="min-h-[300px] p-4 border border-t-0 border-gray-300 rounded-b-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
+                style={{ 
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word'
+                }}
+                suppressContentEditableWarning={true}
                 placeholder="Write your post content here..."
-                required
+              />
+              
+              {/* Hidden input to store content */}
+              <input
+                type="hidden"
+                name="content"
+                value={content}
+                onChange={() => {}} // Controlled by contentEditable
               />
             </div>
 
@@ -192,9 +299,9 @@ const page = () => {
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full py-3 px-6 rounded-lg text-white font-medium transition bg-amber-500 "
+                className="w-full py-3 px-6 rounded-lg text-white font-medium transition bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 shadow-lg"
               >
-                Submit
+                Publish Blog Post
               </button>
             </div>
           </form>
